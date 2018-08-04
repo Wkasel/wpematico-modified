@@ -1,11 +1,11 @@
 <?php
 /*
- Plugin Name: WPeMatico
+ Plugin Name: BuzzSumoMatico - Mod wpematico
  Plugin URI: http://www.wpematico.com
- Description: Enables administrators to create posts automatically from RSS/Atom feeds with multiples filters.  If you like it, please rate it 5 stars.
- Version: 1.2.6
- Author: etruel <esteban@netmdp.com>
- Author URI: http://www.netmdp.com
+ Description: Enables automatic posts from BuzzSumo API consumed via AWS Lambda proxy.
+ Version: 0.0.5
+ Author: wkasel <wkasel@gmail.com>
+ Author URI: http://www.williamkasel.com
  */
 # @charset utf-8
 if ( ! function_exists( 'add_filter' ) )
@@ -16,12 +16,12 @@ if(!defined( 'WPEMATICO_VERSION' ) ) define( 'WPEMATICO_VERSION', '1.2.6' );
 function wpem_php_version_notice(){
 	$class = "error";
 	$message = '<b>WPeMatico:</b> '.__('PHP 5.3.0 or higher needed!', 'wpematico' ) . '<br />';
-    echo"<div class=\"$class\"> <p>$message</p></div>"; 
+    echo"<div class=\"$class\"> <p>$message</p></div>";
 }
 if (version_compare(phpversion(), '5.3.0', '<')) { // check PHP Version
 	$message.=
 	add_action( 'admin_notices', 'wpem_php_version_notice' );
-	return false; 
+	return false;
 }
 
 if (is_admin()) {
@@ -79,10 +79,10 @@ if ( !class_exists( 'WPeMatico' ) ) {
 			self :: $uri = plugin_dir_url( __FILE__ );
 			self :: $dir = plugin_dir_path( __FILE__ );
 			self :: $basen = plugin_basename(__FILE__);
-			
+
 			new self( TRUE );
 		}
-		
+
 		/**
 		 * constructor
 		 *
@@ -92,16 +92,16 @@ if ( !class_exists( 'WPeMatico' ) ) {
 		 */
 		public function __construct( $hook_in = FALSE ) {
 			//Admin message
-			//add_action('admin_notices', array( &$this, 'wpematico_admin_notice' ) ); 
+			//add_action('admin_notices', array( &$this, 'wpematico_admin_notice' ) );
 			if ( ! $this->wpematico_env_checks() )
 				return;
 			$this->load_options();
 
 			if($this->options['nonstatic'] && !class_exists( 'NoNStatic' )){
-				$this->options['nonstatic'] = false; 
+				$this->options['nonstatic'] = false;
 				$this->update_options();
 			}
-			
+
 			$this->Create_campaigns_page();
 			if ( $hook_in ) {
 				add_action( 'admin_menu', array( $this, 'admin_menu' ) );
@@ -116,14 +116,14 @@ if ( !class_exists( 'WPeMatico' ) ) {
 				//Additional links on the plugin page
 				add_filter(	'plugin_row_meta',	array(	__CLASS__, 'init_row_meta'),10,2);
 				add_filter(	'plugin_action_links_' . self :: $basen, array( __CLASS__,'init_action_links'));
-				
+
 				add_filter(	'wpematico_check_campaigndata', array( __CLASS__,'check_campaigndata'),10,1);
 				add_filter(	'wpematico_check_options', array( __CLASS__,'check_options'),10,1);
-								
+
 				//add Dashboard widget
 				if (!$this->options['disabledashboard']){
-					global $current_user;      
-					get_currentuserinfo();	
+					global $current_user;
+					get_currentuserinfo();
 					$user_object = new WP_User($current_user->ID);
 					$roles = $user_object->roles;
 					$display = false;
@@ -132,8 +132,8 @@ if ( !class_exists( 'WPeMatico' ) ) {
 						if ( array_search($cur_role, $this->options['roles_widget']) ) {
 							$display = true;
 						}
-					}	
-					if ( $current_user->ID && ( $display == true ) ) {	
+					}
+					if ( $current_user->ID && ( $display == true ) ) {
 						add_action('wp_dashboard_setup', array( &$this, 'wpematico_add_dashboard'));
 					}
 				}
@@ -153,14 +153,14 @@ if ( !class_exists( 'WPeMatico' ) ) {
 				$campaigns = get_posts( $args );
 				foreach( $campaigns as $post ) {
 					$campaign = $this->get_campaign( $post->ID );
-					$starttime = @$campaign['starttime']; 
+					$starttime = @$campaign['starttime'];
 					if ($starttime>0) {
 						$runtime=current_time('timestamp')-$starttime;
 						if(($this->options['campaign_timeout'] <= $runtime)) {
 							$campaign['lastrun'] = $starttime;
 							$campaign['lastruntime'] = ' <span style="color:red;">Timeout: '.$this->options['campaign_timeout'].'</span>';
 							$campaign['starttime']   = '';
-							$campaign['lastpostscount'] = 0; 
+							$campaign['lastpostscount'] = 0;
 							$this->update_campaign($post->ID, $campaign);  //Save Campaign new data
 						}
 
@@ -183,11 +183,11 @@ if ( !class_exists( 'WPeMatico' ) ) {
 			if ( ! current_user_can( get_post_type_object( $typenow )->cap->edit_others_posts ) ) return;
 			// Don't show if there are no items in the trash for this post type
 			if( 0 == intval( wp_count_posts( $typenow, 'readable' )->trash ) ) return;
-			
+
 			$display = false;
 			$args=array();
 			$output = 'names'; // names or objects
-			$post_types=get_post_types($args,$output); 
+			$post_types=get_post_types($args,$output);
 			foreach ($post_types  as $post_type ) {
 				if($post_type != $typenow) continue;
 				if( isset($this->options['cpt_trashbutton'][$post_type]) && $this->options['cpt_trashbutton'][$post_type] ) {
@@ -202,7 +202,7 @@ if ( !class_exists( 'WPeMatico' ) ) {
 			</div>
 			<?php
 		}
-		
+
 		//add dashboard widget
 		function wpematico_add_dashboard() {
 			wp_add_dashboard_widget( 'wpematico_widget', 'WPeMatico' , array( &$this, 'wpematico_dashboard_widget') );
@@ -217,7 +217,7 @@ if ( !class_exists( 'WPeMatico' ) ) {
 				-ms-filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FCF6BC',endColorstr='#E1DC9C');
 				filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FCF6BC',endColorstr='#E1DC9C');\">";
 			echo '<strong>'.__('Last Processed Campaigns:', self :: TEXTDOMAIN ).'</strong></div>';
-			@$campaigns2 = $this->filter_by_value($campaigns, 'lastrun', '');  
+			@$campaigns2 = $this->filter_by_value($campaigns, 'lastrun', '');
 			$this->array_sort($campaigns2,'!lastrun');
 			if (is_array($campaigns2)) {
 				$count=0;
@@ -225,22 +225,22 @@ if ( !class_exists( 'WPeMatico' ) ) {
 					echo '<a href="'.wp_nonce_url('post.php?post='.$campaign_data['ID'].'&action=edit', 'edit').'" title="'.__('Edit Campaign', self :: TEXTDOMAIN ).'">';
 						if ($campaign_data['lastrun']) {
 							echo " <i><strong>".$campaign_data['campaign_title']."</i></strong>, ";
-							echo  date_i18n( (get_option('date_format').' '.get_option('time_format') ), $campaign_data['lastrun'] ).', <i>'; 
+							echo  date_i18n( (get_option('date_format').' '.get_option('time_format') ), $campaign_data['lastrun'] ).', <i>';
 							if ($campaign_data['lastpostscount']>0)
 								echo ' <span style="color:green;">'. sprintf(__('Processed Posts: %1s', self :: TEXTDOMAIN ),$campaign_data['lastpostscount']).'</span>, ';
 							else
 								echo ' <span style="color:red;">'. sprintf(__('Processed Posts: %1s', self :: TEXTDOMAIN ), '0').'</span>, ';
-								
+
 							if ($campaign_data['lastruntime']<10)
 								echo ' <span style="color:green;">'. sprintf(__('Fetch done in %1s sec.', self :: TEXTDOMAIN ),$campaign_data['lastruntime']) .'</span>';
 							else
 								echo ' <span style="color:red;">'. sprintf(__('Fetch done in %1s sec.', self :: TEXTDOMAIN ),$campaign_data['lastruntime']) .'</span>';
-						} 
+						}
 					echo '</i></a><br />';
 					$count++;
 					if ($count>=5)
 						break;
-				}		
+				}
 			}
 			unset($campaigns2);
 			echo '<br />';
@@ -268,12 +268,12 @@ if ( !class_exists( 'WPeMatico' ) ) {
 				}
 			}
 			$campaigns=$this->filter_by_value($campaigns, 'activated', '');
-			if (empty($campaigns)) 
+			if (empty($campaigns))
 				echo '<i>'.__('None', self :: TEXTDOMAIN ).'</i><br />';
 			echo '</ul>';
 
 		}
-		
+
 		/**
 		* Actions-Links del Plugin
 		*
@@ -314,8 +314,8 @@ if ( !class_exists( 'WPeMatico' ) ) {
 				'<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=B8V39NWK3NFQU" target="_blank">' . __('Donate', self :: TEXTDOMAIN ) . '</a>'
 				)
 			);
-		}		
-		
+		}
+
 		/**
 		 * admin menu custom post type
 		 *
@@ -334,7 +334,7 @@ if ( !class_exists( 'WPeMatico' ) ) {
 			'view_item' => __('View Campaign', self :: TEXTDOMAIN ),
 			'search_items' => __('Search Campaign', self :: TEXTDOMAIN ),
 			'not_found' =>  __('No campaign found', self :: TEXTDOMAIN ),
-			'not_found_in_trash' => __('No Campaign found in Trash', self :: TEXTDOMAIN ), 
+			'not_found_in_trash' => __('No Campaign found in Trash', self :: TEXTDOMAIN ),
 			'parent_item_colon' => '',
 			'menu_name' => 'WpeMatico');
 		  $args = array(
@@ -343,21 +343,21 @@ if ( !class_exists( 'WPeMatico' ) ) {
 			'public' => false,
 			'exclude_from_search' => true,
 			'publicly_queryable' => false,
-			'show_ui' => true, 
-			'show_in_menu' => true, 
+			'show_ui' => true,
+			'show_in_menu' => true,
 			'query_var' => true,
 			'rewrite' => true,
 			'capability_type' => 'post',
-			'has_archive' => true, 
+			'has_archive' => true,
 			'hierarchical' => false,
 			'menu_position' => (get_option('wpem_menu_position')) ? 999 : 7,
 			'menu_icon' => self :: $uri.'/images/wpe_ico.png',
 			'register_meta_box_cb' => array( 'WPeMatico_Campaign_edit', 'create_meta_boxes'),
 			'map_meta_cap' => true,
-			'supports' => array( 'title', 'excerpt' ) ); 
+			'supports' => array( 'title', 'excerpt' ) );
 		  register_post_type('wpematico',$args);
 		}  //
-		
+
 
 		/**
 		 * admin_init
@@ -369,12 +369,12 @@ if ( !class_exists( 'WPeMatico' ) ) {
 			$sect_title='<img src="' . self :: $uri.'/images/CoffeeCupadd_32.png'.'" style="margin: 0pt 2px -2px 0pt;">'.' WPeMatico '.WPEMATICO_VERSION;
 			add_settings_section('wpematico', $sect_title, array($this, 'writing_settings'), 'writing');
 			register_setting( 'writing', 'wpem_menu_position'); //, 'sanitize_callback' );
-			add_settings_field( 
-				'wpem_menu_position',                 
-				'Reset Menu Position',                
-				array($this, 'menu_position_callback'), 
-				'writing',                        
-				'wpematico',         
+			add_settings_field(
+				'wpem_menu_position',
+				'Reset Menu Position',
+				array($this, 'menu_position_callback'),
+				'writing',
+				'wpematico',
 				array(        //The array of arguments to pass to the callback. In this case, just a description.
 					__('Activate this setting if you can\'t see WPeMatico menu at left under Posts.', self :: TEXTDOMAIN )
 				)
@@ -383,7 +383,7 @@ if ( !class_exists( 'WPeMatico' ) ) {
 		}
 
 		/**
-		 * Wordpress writing settings 
+		 * Wordpress writing settings
 		 *
 		 * @access public
 		 * @return void
@@ -402,9 +402,9 @@ if ( !class_exists( 'WPeMatico' ) ) {
 						'<p>' . __('You must click the Save Changes button at the bottom of the screen for new settings to take effect.') . '</p>',
 				) );
 		}
-		
+
 		/**
-		 * Wordpress writing settings 
+		 * Wordpress writing settings
 		 *
 		 * @access public
 		 * @return void
@@ -412,18 +412,18 @@ if ( !class_exists( 'WPeMatico' ) ) {
 		public function writing_settings($arg) {
 			echo "<p></p>";
 		}
-		
+
 		public function menu_position_callback($args) {
 			// Note the ID and the name attribute of the element match that of the ID in the call to add_settings_field
-			$html = '<input type="checkbox" id="wpem_menu_position" name="wpem_menu_position" value="1" ' . checked(1, get_option('wpem_menu_position'), false) . '/>'; 
+			$html = '<input type="checkbox" id="wpem_menu_position" name="wpem_menu_position" value="1" ' . checked(1, get_option('wpem_menu_position'), false) . '/>';
 
 			// Here, we will take the first argument of the array and add it to a label next to the checkbox
-			$html .= '<label for="wpem_menu_position"> '  . $args[0] . '</label>'; 
+			$html .= '<label for="wpem_menu_position"> '  . $args[0] . '</label>';
 
 			echo $html;
 
 		}
-		
+
 		/**
 		 * admin menu
 		 *
@@ -444,7 +444,7 @@ if ( !class_exists( 'WPeMatico' ) ) {
 
 		public static function WPemat_admin_styles() {
 			wp_enqueue_style( 'WPematStylesheet' );
-			wp_enqueue_style( 'oplugincss' );			
+			wp_enqueue_style( 'oplugincss' );
 			wp_enqueue_script( 'WPemattiptip' );
 			wp_enqueue_script( 'opluginjs' );
 			add_action('admin_head', 'wpematico_settings_head');
@@ -452,9 +452,9 @@ if ( !class_exists( 'WPeMatico' ) ) {
 
 		/**
 		 * load_options in class options attribute
-		 * 
-		 * @access public 
-		 * load array with options in class options attribute 
+		 *
+		 * @access public
+		 * load array with options in class options attribute
 		 * @return void
 		 */
 		public function load_options() {
@@ -476,7 +476,7 @@ if ( !class_exists( 'WPeMatico' ) ) {
 			$cfg['mailsecure']		= (!isset($options['mailsecure'])) ? '': $options['mailsecure'];
 			$cfg['mailhost']		= (!isset($options['mailhost'])) ? '': $options['mailhost'];
 			$cfg['mailport']		= (!isset($options['mailport'])) ? '': $options['mailport'];
-			$cfg['mailuser']		= (!isset($options['mailuser'])) ? '': $options['mailuser'];			
+			$cfg['mailuser']		= (!isset($options['mailuser'])) ? '': $options['mailuser'];
 			$cfg['mailpass']		= (!isset($options['mailpass'])) ? '': $options['mailpass'];
 			$cfg['disabledashboard']= (!isset($options['disabledashboard']) || empty($options['disabledashboard'])) ? false : ($options['disabledashboard']==1) ? true : false;
 			$cfg['roles_widget']	= (!isset($options['roles_widget']) || !is_array($options['roles_widget'])) ? array( "administrator" => "administrator" ): $options['roles_widget'];
@@ -497,8 +497,8 @@ if ( !class_exists( 'WPeMatico' ) ) {
 			$cfg['set_stupidly_fast']	= (!isset($options['set_stupidly_fast']) || empty($options['set_stupidly_fast'])) ? false: ($options['set_stupidly_fast']==1) ? true : false;
 			$cfg['simplepie_strip_htmltags'] = (!isset($options['simplepie_strip_htmltags']) || empty($options['simplepie_strip_htmltags'])) ? false: ($options['simplepie_strip_htmltags']==1) ? true : false;
 			$cfg['simplepie_strip_attributes'] = (!isset($options['simplepie_strip_attributes']) || empty($options['simplepie_strip_attributes'])) ? false: ($options['simplepie_strip_attributes']==1) ? true : false;
-			$cfg['strip_htmltags']	= (!isset($options['strip_htmltags'])) ? '': $options['strip_htmltags'];			
-			$cfg['strip_htmlattr']	= (!isset($options['strip_htmlattr'])) ? '': $options['strip_htmlattr'];			
+			$cfg['strip_htmltags']	= (!isset($options['strip_htmltags'])) ? '': $options['strip_htmltags'];
+			$cfg['strip_htmlattr']	= (!isset($options['strip_htmlattr'])) ? '': $options['strip_htmlattr'];
 			$cfg['woutfilter']		= (!isset($options['woutfilter']) || empty($options['woutfilter'])) ? false: ($options['woutfilter']==1) ? true : false;
 			$cfg['campaign_timeout']= (!isset($options['campaign_timeout']) ) ? 300: (int)$options['campaign_timeout'];
 			$cfg['throttle']		= (!isset($options['throttle']) ) ? 0: (int)$options['throttle'];
@@ -513,7 +513,7 @@ if ( !class_exists( 'WPeMatico' ) ) {
 
 			return $cfg;
 		}
-		
+
 		/**
 		 * update_options
 		 *
@@ -532,27 +532,27 @@ if ( !class_exists( 'WPeMatico' ) ) {
 		 * @return void
 		 */
 		public static function activate() {
-		    self :: Create_campaigns_page(); 
+		    self :: Create_campaigns_page();
 			// ATTENTION: This is *only* done during plugin activation hook // You should *NEVER EVER* do this on every page load!!
-			flush_rewrite_rules();			
+			flush_rewrite_rules();
 			//tweaks old campaigns data, now saves meta for columns
 			$campaigns_data = array();
 			$args = array(
 				'orderby'         => 'ID',
 				'order'           => 'ASC',
-				'post_type'       => 'wpematico', 
+				'post_type'       => 'wpematico',
 				'numberposts' => -1
 			);
 			$campaigns = get_posts( $args );
 			foreach( $campaigns as $post ):
-				$campaigndata = self::get_campaign( $post->ID );	
+				$campaigndata = self::get_campaign( $post->ID );
 				$campaigndata = apply_filters('wpematico_check_campaigndata', $campaigndata);
 				self::update_campaign($post->ID, $campaigndata);
-			endforeach; 
+			endforeach;
 
 			wp_clear_scheduled_hook('wpematico_cron');
 			//make schedule
-			wp_schedule_event(0, 'wpematico_int', 'wpematico_cron'); 
+			wp_schedule_event(0, 'wpematico_int', 'wpematico_cron');
 		}
 
 		/**
@@ -567,7 +567,7 @@ if ( !class_exists( 'WPeMatico' ) ) {
 			$args = array( 'post_type' => 'wpematico', 'orderby' => 'ID', 'order' => 'ASC' );
 			$campaigns = get_posts( $args );
 			foreach( $campaigns as $post ) {
-				$campaign = self :: get_campaign( $post->ID );	
+				$campaign = self :: get_campaign( $post->ID );
 				$activated = $campaign['activated'];
 				if ($time=wp_next_scheduled('wpematico_cron',array('ID'=>$post->ID)))
 					wp_unschedule_event($time,'wpematico_cron',array('ID'=>$post->ID));
@@ -608,8 +608,8 @@ if ( !class_exists( 'WPeMatico' ) ) {
 			//This is not a good wordpress practice.  Recommended select all campaigns on campaigns list and delete them before uninstall plugin.
 			//$wpdb->query( "DELETE FROM {$wpdb->prefix}posts WHERE post_type = 'wpematico'" );
 		}
-		
-		
+
+
 		/**
 		* Add cron interval
 		*
@@ -639,4 +639,3 @@ if ( !class_exists( 'WPeMatico' ) ) {
 		}
 	}
 }
-

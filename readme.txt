@@ -11,7 +11,7 @@ This is for autoblogging. Post automatically from RSS/Atom feeds organized into 
 
 == Description ==
 
-WPeMatico is for autoblogging, automatically creating posts from the RSS/Atom feeds you choose, which are organized into campaigns. 
+WPeMatico is for autoblogging, automatically creating posts from the RSS/Atom feeds you choose, which are organized into campaigns.
 [youtube http://www.youtube.com/watch?v=N9wuKSbp1AE]
 
 Requires PHP >= 5.3
@@ -24,7 +24,7 @@ If you like, please [Rate 5 Stars](https://wordpress.org/support/view/plugin-rev
 
 Some supported features (but not all of them):
 
-* Campaigs Feeds and options are organized into campaigns.
+* Campaign Feeds and options are organized into campaigns.
 * Comfortable interface like Worpress posts editing for every campaign.
 * Multiple feeds / categories: it’s possible to add as many feeds as you want, and add them to some categories as you want.
 * Integrated with the Simplepie library that come with Wordpress.  This includes RSS 0.91 and RSS 1.0 formats, the popular RSS 2.0 format, Atom...
@@ -38,7 +38,7 @@ Some supported features (but not all of them):
 * Words to Category. Define custom words for assign every post to specified categories.
 * Detailed Log sending to custom e-mail. Always on every executed cron or only on errors with campaign.
 * Option to replace title links (Permalink) to source.
-* Post templating. 
+* Post templating.
 * Now you can choose what role can see the dashboard widget.
 * Multilanguage ready.
 
@@ -71,9 +71,9 @@ Some supported features (but not all of them):
 Translations ready. .pot english file included for translate.  Translations files are welcome.
 I take code from many many other plugins, but for the first beta versions of this plugin I read a lot of code of the old WP-o-Matic and also old versions of BackWPUp. I'm talking about 2009 or 2010.  Thanks to the developers ;)
 
-This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version. 
+This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Author page in spanish:[NetMdP](http://www.netmdp.com). 
+Author page in spanish:[NetMdP](http://www.netmdp.com).
 Plugin and Add-ons page:[etruel.com](http://etruel.com).
 
 
@@ -147,18 +147,18 @@ You can either install it automatically from the WordPress admin, or do it manua
 
 You can contribute with WPeMatico
 Needed translation files: if you can translate from english to any language, you are welcome.
-The .pot file are included on plugin and you must use poedit for tranlate.  
+The .pot file are included on plugin and you must use poedit for tranlate.
 Your work, name and website will be mentioned here.
 
 Features supported by
 Thomas from [Invade It](http://www.invadeit.co.th)
 Filter images by width or height.
 
-Eli from [Eli the Computer Guy](http://www.elithecomputerguy.com/)  
-Made an excelent video on Youtube [Use WPeMatico to Create a Free WordPress AutoBlog for Legitimate Purposes](https://www.youtube.com/watch?v=CX22kAeUKY8)  
+Eli from [Eli the Computer Guy](http://www.elithecomputerguy.com/)
+Made an excelent video on Youtube [Use WPeMatico to Create a Free WordPress AutoBlog for Legitimate Purposes](https://www.youtube.com/watch?v=CX22kAeUKY8)
 Later I've added subtitles and added to [Description](https://wordpress.org/plugins/wpematico/) page of this plugin.
 
-Branco [WebHostingGeeks.com](http://webhostinggeeks.com/user-reviews/).  
+Branco [WebHostingGeeks.com](http://webhostinggeeks.com/user-reviews/).
 Romanian & Slovak languages files.
 
 Also we need tutorials on text, pdf, videos.  All are welcome.
@@ -177,12 +177,12 @@ or to e-mail etruel@gmail.com
 
 = 1.2.5.2 =
 * Removes SMTP mail method and added as Add-on.
-* Fixes Settings page for servers without mcrypt PHP extension. 
+* Fixes Settings page for servers without mcrypt PHP extension.
 * Added Filters and Actions for new Add-ons.
 
 = 1.2.5.1 =
 * Fixes white screen on Settings page when uses PHP < 5.4
-* Added Wordpress filters to every item inserted on new posts. 
+* Added Wordpress filters to every item inserted on new posts.
 * [PRO] must download version 1.2.5.1 [PRO](http://etruel.com/downloads/wpematico-pro/)
 * Added 'Strip HTML Tags From Title' option to Campaign Custom Title Options.
 * [/PRO]
@@ -262,8 +262,8 @@ or to e-mail etruel@gmail.com
 * New feature: License key to launch automatic upgrades.
 * Automatic Upgrades from wordpress plugins page.
 * Removed the hated requirement to upgrade: Remember deactivate PRO version before upgrade. That there is not necessary now.
-* Fixed: don't crash website when upgrade WPeMatico free or is not activated. 
-* Fixed: get automatically Image URL when select image in gallery for Default Featured image. 
+* Fixed: don't crash website when upgrade WPeMatico free or is not activated.
+* Fixed: get automatically Image URL when select image in gallery for Default Featured image.
 * New: Checked required versions to run with free version.
 * Removed 1 min. cron feature and HTML lawed for better performance.
 * [/PRO]
@@ -353,7 +353,7 @@ or to e-mail etruel@gmail.com
 
 = 1.1.5 =
 * New feature for allow or not duplicates posts.
-* Fixes adding categories and tags to posts.  
+* Fixes adding categories and tags to posts.
 * Screenshots optimized reduce the plugin size.
 * Some styles improvements.
 * Thanks for donate Mark :)
@@ -364,7 +364,7 @@ or to e-mail etruel@gmail.com
 = 1.1.3 =
 * Added timeout on running campaigns.  This feature  automaticly Clear/Stop halted campaigns after some period of time.
 * Fixes use of wp_create_category and wp_insert_category functions that sometimes won't works.
-* Fixes some styles that were working only on Firefox.  
+* Fixes some styles that were working only on Firefox.
 
 = 1.1.2 =
 * Added New feature: Now you can run all or selected campaigns at once on campaigns list.
@@ -375,7 +375,7 @@ or to e-mail etruel@gmail.com
 * Added SimplePie: Server Compatibility Test 1.3, for check if the plugin will work on server.
 * Fixes loading localization textdomain.
 * Fixes some issues with I18n.
-* Added Romanian & Slovak languages files. 
+* Added Romanian & Slovak languages files.
 
 = 1.1.1 =
 * Added New feature: Auto categories from source posts (were available).
@@ -405,7 +405,7 @@ or to e-mail etruel@gmail.com
 * [/PRO]
 
 = 1.0.2 =
-* Fixes many DEPRECATED PHP notices on log and cron interrupted: upgraded Simplepie library to 1.3. 
+* Fixes many DEPRECATED PHP notices on log and cron interrupted: upgraded Simplepie library to 1.3.
 * New option on advanced settings to force use of Simplepie library in plugin. Simplepie provided by WP is not compatible with PHP 5.3.
 * Added options for skip Wordpress Post content filters. Beta. (this is for allow embed code like flash or videos on posts)
 * Fixes some other minor details.
@@ -432,7 +432,7 @@ This is a really update. Lot of things that you asked for, are ready in 1.0 vers
 * Colored boxes for knowing what I'm doing.
 * More options on Settings.
 * New logo and images.
-* Totally translatable. 
+* Totally translatable.
 * Better use of Ajax.
 * Better use of class SimplePie included into Wordpress core.
 * Deactivated Wordpress Autosave only editing WPeMatico campaigns.
@@ -475,7 +475,7 @@ This is a really update. Lot of things that you asked for, are ready in 1.0 vers
 * [PRO]
 * Added New Feature: Custom Title with counter.
 * [/PRO]
-* Added {author} tag for retrieve the name of the Author of the post. 
+* Added {author} tag for retrieve the name of the Author of the post.
 * Added {authorlink} tag for retrieve the original link of the Author of the post.
 * Added new method for check duplicate posts also with the source permalink.
 * Added option for display or not the dashboard widget.
@@ -498,12 +498,12 @@ This is a really update. Lot of things that you asked for, are ready in 1.0 vers
 * [/PRO]
 * Fixes images process after rewrite functions for not upload deleted images at content.
 * Fixes spaces at images names.
-* Fixes little duplicate thing on titles with special chars. 
+* Fixes little duplicate thing on titles with special chars.
 
 = 0.82Beta =
 * New option for enable or not the new feature: Words to Category.
 * Words to Category. Define custom words for assign every post to specified categories.
-* Fixes "No link to source images" Hide/show option on click "Enable cache img" 
+* Fixes "No link to source images" Hide/show option on click "Enable cache img"
 * Added "checking" image near "Check all feeds" button.
 
 = 0.81Beta =
